@@ -107,7 +107,6 @@ public class Resource {
                 pointA = distributionCenter.getCoordinatesDC();
                 pointB = deliveryOrders.get(a).getCoordinates();
                 timeDelivery = calculateTimeBetweenPoints(pointA, pointB);
-//                timeFinish += timeDelivery + deliveryOrders.get(a).getUnloadingTime();
                 if (timeFinish < deliveryOrders.get(a).getAccessWindow().getMinuteStart()) {
                     timeStart = deliveryOrders.get(a).getAccessWindow().getMinuteStart();
                     timeFinish = deliveryOrders.get(a).getAccessWindow().getMinuteStart() + deliveryOrders.get(a).getUnloadingTime();
@@ -126,7 +125,6 @@ public class Resource {
                     timeStart += timeDelivery;
                     timeFinish += timeDelivery + deliveryOrders.get(a).getUnloadingTime();
                 }
-                //timeFinish = deliveryOrders.get(a).getUnloadingTime() + timeDelivery;
             }
             deliveryOrders.get(a).setTimeStartService(timeStart);
             deliveryOrders.get(a).setTimeFinishService(timeFinish);
