@@ -4,7 +4,6 @@ public class Coordinates {
 
     private double latitude;//широта f
     private double longitude;//долгота l
-    private double distance;
 
     public Coordinates() {
     }
@@ -14,17 +13,10 @@ public class Coordinates {
         this.longitude = longitude;
     }
 
-    public Coordinates(double distance) {
-        this.distance = distance;
-    }
-
     public double getLatitude() {
         return latitude;
     }
 
-    public double getDistance() {
-        return distance;
-    }
 
     public double getLongitude() {
         return longitude;

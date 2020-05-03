@@ -9,6 +9,7 @@ public class Resource {
     private int speed;
     private int maxWeight;
     private int currentWeight;
+
     private int mainTimeDeliveryStart = 0;
     private int mainTimeDeliveryFinish = 0;
 
@@ -37,7 +38,16 @@ public class Resource {
         return maxWeight;
     }
 
+    public int getMainTimeDeliveryStart() {
+        return mainTimeDeliveryStart;
+    }
+
+    public int getMainTimeDeliveryFinish() {
+        return mainTimeDeliveryFinish;
+    }
+
     public ArrayList<Order> calcTimeDelivery(ArrayList<Order> deliveryOrders) {
+
         int timeStart = 0;
         int timeFinish = 0;
         int timeDelivery = 0;
@@ -46,6 +56,7 @@ public class Resource {
         Coordinates pointB;
         Coordinates pointA;
 
+        //расчёт времени погрузки на рейс
         for (int a = 0; a < deliveryOrders.size(); a++) {
             timeLoading += deliveryOrders.get(a).getLoadingTime();
         }
@@ -57,34 +68,67 @@ public class Resource {
             pointB = deliveryOrders.get(0).getCoordinates();
             timeDelivery = calculateTimeBetweenPoints(pointA, pointB);
 
-
             //выставление времени начала работы ресурса
             tripTimeDeliveryStart = firstOrder.getAccessWindow().getMinuteStart() - timeLoading - timeDelivery;
+            timeStart = firstOrder.getAccessWindow().getMinuteStart()-timeLoading-timeDelivery;
+            timeFinish = timeStart + firstOrder.getUnloadingTime();
+
+            if (timeStart<=distributionCenter.getAccessWindow().getMinuteStart()){
+                timeStart = distributionCenter.getAccessWindow().getMinuteStart()+timeDelivery+timeLoading;
+                tripTimeDeliveryStart = distributionCenter.getAccessWindow().getMinuteStart();
+                timeFinish = timeStart+firstOrder.getUnloadingTime();
+            }
+            else{
+                timeStart = firstOrder.getAccessWindow().getMinuteStart();
+                timeFinish = timeStart + firstOrder.getUnloadingTime();
+            }
             if (mainTimeDeliveryStart == 0) {
                 mainTimeDeliveryStart = tripTimeDeliveryStart;
             }
-            timeStart = tripTimeDeliveryStart;
-            timeFinish = tripTimeDeliveryStart;
+
+
         }
 
 
         for (int a = 0; a < deliveryOrders.size(); a++) {
-            //время начала работы с заказом(начало загрузки)
-            deliveryOrders.get(a).setTimeStartService(timeStart);
-            timeStart += deliveryOrders.get(a).getLoadingTime();
+            //время начала работы с заказом(начало разгрузки у клиента)
+            //deliveryOrders.get(a).setTimeStartService(timeStart);
+            //timeStart += deliveryOrders.get(a).getLoadingTime();
+
+//                timeStart += deliveryOrders.get(a).getLoadingTime();
+//                deliveryOrders.get(a).setTimeStartService(timeStart);
+
 
             //время окончания работы с заказом(после разрузки)
-            if (a == 0 || a == (deliveryOrders.size() - 1)) {
+            if (a == 0) {
+                deliveryOrders.get(a).setTimeStartService(timeStart);
+                deliveryOrders.get(a).setTimeFinishService(timeFinish);
+            } else if (a == (deliveryOrders.size() - 1)) {
                 pointA = distributionCenter.getCoordinatesDC();
                 pointB = deliveryOrders.get(a).getCoordinates();
                 timeDelivery = calculateTimeBetweenPoints(pointA, pointB);
-                timeFinish += timeLoading + timeDelivery + deliveryOrders.get(a).getUnloadingTime();
+//                timeFinish += timeDelivery + deliveryOrders.get(a).getUnloadingTime();
+                if (timeFinish < deliveryOrders.get(a).getAccessWindow().getMinuteStart()) {
+                    timeStart = deliveryOrders.get(a).getAccessWindow().getMinuteStart();
+                    timeFinish = deliveryOrders.get(a).getAccessWindow().getMinuteStart() + deliveryOrders.get(a).getUnloadingTime();
+                } else {
+                    timeStart += timeDelivery;
+                    timeFinish += timeDelivery + deliveryOrders.get(a).getUnloadingTime();
+                }
             } else {
                 pointA = deliveryOrders.get(a).getCoordinates();
                 pointB = deliveryOrders.get(a + 1).getCoordinates();
                 timeDelivery = calculateTimeBetweenPoints(pointA, pointB);
-                timeFinish += deliveryOrders.get(a).getLoadingTime() + timeDelivery + deliveryOrders.get(a).getUnloadingTime();
+                if (timeFinish < deliveryOrders.get(a).getAccessWindow().getMinuteStart()) {
+                    timeStart = deliveryOrders.get(a).getAccessWindow().getMinuteStart();
+                    timeFinish = deliveryOrders.get(a).getAccessWindow().getMinuteStart() + deliveryOrders.get(a).getUnloadingTime();
+                } else {
+                    timeStart += timeDelivery;
+                    timeFinish += timeDelivery + deliveryOrders.get(a).getUnloadingTime();
+                }
+                //timeFinish = deliveryOrders.get(a).getUnloadingTime() + timeDelivery;
             }
+            deliveryOrders.get(a).setTimeStartService(timeStart);
             deliveryOrders.get(a).setTimeFinishService(timeFinish);
         }
 
@@ -93,7 +137,7 @@ public class Resource {
         pointB = distributionCenter.getCoordinatesDC();
         timeDelivery = calculateTimeBetweenPoints(pointA, pointB);
         //выставление/обновление времени окончания работы ресурса
-        tripTimeDeliveryFinish = timeFinish + timeDelivery;
+        tripTimeDeliveryFinish = timeFinish+timeDelivery;
         mainTimeDeliveryFinish = tripTimeDeliveryFinish;
         return deliveryOrders;
     }
@@ -130,10 +174,12 @@ public class Resource {
     public boolean resourceIsFull(int addWeight) {
         currentWeight += addWeight;
         if (currentWeight > maxWeight) {
+            currentWeight -= addWeight;
             return true;
         } else
             return false;
     }
+
 
     //время поездки между двумя точками
     public int calculateTimeBetweenPoints(Coordinates pointA, Coordinates pointB) {
@@ -145,26 +191,30 @@ public class Resource {
 
 
     public void printTripTimeStatistic(ArrayList<Order> deliveryOrders, int numTrip) {
-        System.out.println(String.format("TRIP #%d count orders %d", numTrip,deliveryOrders.size()));
-        System.out.println("trip loading start time: " + AccessWindow.timeConvert(mainTimeDeliveryStart));
+        System.out.println("TRIP STATISTIC:");
+        System.out.println(String.format("TRIP #%d count orders %d weight %d/%d",
+                numTrip, deliveryOrders.size(), currentWeight, maxWeight));
+        System.out.println("trip loading start time: " + AccessWindow.timeConvert(tripTimeDeliveryStart));
         for (int a = 0; a < deliveryOrders.size(); a++) {
             System.out.println("--------------------------------");
-            System.out.println("order name " + deliveryOrders.get(a).getOrderName());
-            System.out.println("access window " + deliveryOrders.get(a).getAccessWindow().getStandardStartTime() +
+            System.out.println("    order name " + deliveryOrders.get(a).getOrderName());
+            System.out.println("    time loading & unloading " +
+                    deliveryOrders.get(a).getLoadingTime()+", " +deliveryOrders.get(a).getUnloadingTime());
+            System.out.println("    access window " + deliveryOrders.get(a).getAccessWindow().getStandardStartTime() +
                     " - " + deliveryOrders.get(a).getAccessWindow().getStandardFinishTime());
-            System.out.println("order start time " + AccessWindow.timeConvert(deliveryOrders.get(a).getTimeServiceStart()));
-            System.out.println("order finish time " + AccessWindow.timeConvert(deliveryOrders.get(a).getTimeServiceFinish()));
+            System.out.println("    order start time " + AccessWindow.timeConvert(deliveryOrders.get(a).getTimeServiceStart()));
+            System.out.println("    order finish time " + AccessWindow.timeConvert(deliveryOrders.get(a).getTimeServiceFinish()));
         }
         System.out.println("--------------------------------");
-        System.out.println("resource return time: " + AccessWindow.timeConvert(mainTimeDeliveryFinish));
-        System.out.println("resource trip time work: " + AccessWindow.timeConvert(tripTimeDeliveryFinish - tripTimeDeliveryStart));
+        System.out.println("    resource return time to DC: " + AccessWindow.timeConvert(mainTimeDeliveryFinish));
+        System.out.println("    resource trip time work: " + AccessWindow.timeConvert(tripTimeDeliveryFinish - tripTimeDeliveryStart));
         System.out.println("++++++++++++++++++++++++++++++++");
     }
 
-    public void printMainTimeStatistic(){
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("resource start main time: " + AccessWindow.timeConvert(mainTimeDeliveryStart));
-        System.out.println("resource return main time: " + AccessWindow.timeConvert(mainTimeDeliveryFinish));
-        System.out.println("resource main time work: " + AccessWindow.timeConvert(mainTimeDeliveryFinish - mainTimeDeliveryStart));
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");}
+    public void printMainTimeStatistic() {
+        System.out.println("RESOURCE STATISTIC:");
+        System.out.println("    resource start main time: " + AccessWindow.timeConvert(mainTimeDeliveryStart));
+        System.out.println("    resource return main time: " + AccessWindow.timeConvert(mainTimeDeliveryFinish));
+        System.out.println("    resource main time work: " + AccessWindow.timeConvert(mainTimeDeliveryFinish - mainTimeDeliveryStart));
+    }
 }
