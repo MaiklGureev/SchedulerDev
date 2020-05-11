@@ -46,7 +46,7 @@ public class Resource {
         return mainTimeDeliveryFinish;
     }
 
-    public ArrayList<Order> calcTimeDelivery(ArrayList<Order> deliveryOrders) {
+    public ArrayList<Order> calcTimeDelivery(ArrayList<Order> deliveryOrders, int numberTrip) {
 
         int timeStart = 0;
         int timeFinish = 0;
@@ -69,23 +69,21 @@ public class Resource {
             timeDelivery = calculateTimeBetweenPoints(pointA, pointB);
 
             //выставление времени начала работы ресурса
-            tripTimeDeliveryStart = firstOrder.getAccessWindow().getMinuteStart() - timeLoading - timeDelivery;
-            timeStart = firstOrder.getAccessWindow().getMinuteStart()-timeLoading-timeDelivery;
-            timeFinish = timeStart + firstOrder.getUnloadingTime();
-
-            if (timeStart<=distributionCenter.getAccessWindow().getMinuteStart()){
-                timeStart = distributionCenter.getAccessWindow().getMinuteStart()+timeDelivery+timeLoading;
-                tripTimeDeliveryStart = distributionCenter.getAccessWindow().getMinuteStart();
-                timeFinish = timeStart+firstOrder.getUnloadingTime();
+            if(numberTrip==1){
+                //если рейс первый начинаем ориентируясь от конца окна клиента
+                tripTimeDeliveryStart = firstOrder.getAccessWindow().getMinuteFinish() - firstOrder.getUnloadingTime() - timeLoading - timeDelivery;
+                timeStart = tripTimeDeliveryStart + timeLoading + timeDelivery;
             }
             else{
-                timeStart = firstOrder.getAccessWindow().getMinuteStart();
-                timeFinish = timeStart + firstOrder.getUnloadingTime();
+                //если рейс второй третий и так далее приезжаем к началу окна, чтобы быстрее закончить
+                tripTimeDeliveryStart = firstOrder.getAccessWindow().getMinuteStart() - timeLoading - timeDelivery;
+                timeStart = tripTimeDeliveryStart;
             }
+            timeFinish = timeStart + firstOrder.getUnloadingTime();
+
             if (mainTimeDeliveryStart == 0) {
                 mainTimeDeliveryStart = tripTimeDeliveryStart;
             }
-
 
         }
 
@@ -135,7 +133,7 @@ public class Resource {
         pointB = distributionCenter.getCoordinatesDC();
         timeDelivery = calculateTimeBetweenPoints(pointA, pointB);
         //выставление/обновление времени окончания работы ресурса
-        tripTimeDeliveryFinish = timeFinish+timeDelivery;
+        tripTimeDeliveryFinish = timeFinish + timeDelivery;
         mainTimeDeliveryFinish = tripTimeDeliveryFinish;
         return deliveryOrders;
     }
@@ -159,7 +157,7 @@ public class Resource {
             }
             if (!deliveryOrders.isEmpty()) {
                 numTrip += 1;
-                deliveryOrders = calcTimeDelivery(deliveryOrders);
+                deliveryOrders = calcTimeDelivery(deliveryOrders,numTrip);
                 printTripTimeStatistic(deliveryOrders, numTrip);
                 deliveryOrders.removeAll(deliveryOrders);
                 currentWeight = 0;
@@ -197,7 +195,7 @@ public class Resource {
             System.out.println("--------------------------------");
             System.out.println("    order name " + deliveryOrders.get(a).getOrderName());
             System.out.println("    time loading & unloading " +
-                    deliveryOrders.get(a).getLoadingTime()+", " +deliveryOrders.get(a).getUnloadingTime());
+                    deliveryOrders.get(a).getLoadingTime() + ", " + deliveryOrders.get(a).getUnloadingTime());
             System.out.println("    access window " + deliveryOrders.get(a).getAccessWindow().getStandardStartTime() +
                     " - " + deliveryOrders.get(a).getAccessWindow().getStandardFinishTime());
             System.out.println("    order start time " + AccessWindow.timeConvert(deliveryOrders.get(a).getTimeServiceStart()));

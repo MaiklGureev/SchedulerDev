@@ -1,0 +1,116 @@
+"C:\Program Files\Java\jdk1.8.0_241\bin\java.exe" "-javaagent:C:\Program Files\JetBrains\IntelliJ IDEA 2019.3.3\lib\idea_rt.jar=50943:C:\Program Files\JetBrains\IntelliJ IDEA 2019.3.3\bin" -Dfile.encoding=UTF-8 -classpath "C:\Program Files\Java\jdk1.8.0_241\jre\lib\charsets.jar;C:\Program Files\Java\jdk1.8.0_241\jre\lib\deploy.jar;C:\Program Files\Java\jdk1.8.0_241\jre\lib\ext\access-bridge-64.jar;C:\Program Files\Java\jdk1.8.0_241\jre\lib\ext\cldrdata.jar;C:\Program Files\Java\jdk1.8.0_241\jre\lib\ext\dnsns.jar;C:\Program Files\Java\jdk1.8.0_241\jre\lib\ext\jaccess.jar;C:\Program Files\Java\jdk1.8.0_241\jre\lib\ext\jfxrt.jar;C:\Program Files\Java\jdk1.8.0_241\jre\lib\ext\localedata.jar;C:\Program Files\Java\jdk1.8.0_241\jre\lib\ext\nashorn.jar;C:\Program Files\Java\jdk1.8.0_241\jre\lib\ext\sunec.jar;C:\Program Files\Java\jdk1.8.0_241\jre\lib\ext\sunjce_provider.jar;C:\Program Files\Java\jdk1.8.0_241\jre\lib\ext\sunmscapi.jar;C:\Program Files\Java\jdk1.8.0_241\jre\lib\ext\sunpkcs11.jar;C:\Program Files\Java\jdk1.8.0_241\jre\lib\ext\zipfs.jar;C:\Program Files\Java\jdk1.8.0_241\jre\lib\javaws.jar;C:\Program Files\Java\jdk1.8.0_241\jre\lib\jce.jar;C:\Program Files\Java\jdk1.8.0_241\jre\lib\jfr.jar;C:\Program Files\Java\jdk1.8.0_241\jre\lib\jfxswt.jar;C:\Program Files\Java\jdk1.8.0_241\jre\lib\jsse.jar;C:\Program Files\Java\jdk1.8.0_241\jre\lib\management-agent.jar;C:\Program Files\Java\jdk1.8.0_241\jre\lib\plugin.jar;C:\Program Files\Java\jdk1.8.0_241\jre\lib\resources.jar;C:\Program Files\Java\jdk1.8.0_241\jre\lib\rt.jar;C:\Users\Mikhail Gureev\IdeaProjects\SchedulerDev\out\production\SchedulerDev" com.MGureev.Main
+RESOURCE #1
+TRIP STATISTIC:
+TRIP #1 count orders 2 weight 30/40
+trip loading start time: 12:30
+--------------------------------
+    order name order_1
+    time loading & unloading 10, 10
+    access window 12:30 - 13:00
+    order start time 12:50
+    order finish time 13:00
+--------------------------------
+    order name order_2
+    time loading & unloading 5, 5
+    access window 15:00 - 16:00
+    order start time 15:00
+    order finish time 15:05
+--------------------------------
+    resource return time to DC: 15:13
+    resource trip time work: 2:43
+++++++++++++++++++++++++++++++++
+TRIP STATISTIC:
+TRIP #2 count orders 1 weight 20/40
+trip loading start time: 15:30
+--------------------------------
+    order name order_3
+    time loading & unloading 15, 5
+    access window 16:00 - 17:00
+    order start time 15:30
+    order finish time 15:35
+--------------------------------
+    resource return time to DC: 15:50
+    resource trip time work: 0:20
+++++++++++++++++++++++++++++++++
+RESOURCE STATISTIC:
+    resource start main time: 12:30
+    resource return main time: 15:50
+    resource main time work: 3:20
+DC time work 9:00 - 18:00
+CONCLUSION: resource #1 fits in DC access window
+
+RESOURCE #2
+TRIP STATISTIC:
+TRIP #1 count orders 1 weight 50/50
+trip loading start time: 9:07
+--------------------------------
+    order name order_4
+    time loading & unloading 10, 10
+    access window 9:00 - 9:30
+    order start time 9:20
+    order finish time 9:30
+--------------------------------
+    resource return time to DC: 9:33
+    resource trip time work: 0:26
+++++++++++++++++++++++++++++++++
+TRIP STATISTIC:
+TRIP #2 count orders 1 weight 50/50
+trip loading start time: 14:15
+--------------------------------
+    order name order_5
+    time loading & unloading 40, 40
+    access window 15:00 - 16:00
+    order start time 14:15
+    order finish time 14:55
+--------------------------------
+    resource return time to DC: 15:00
+    resource trip time work: 0:45
+++++++++++++++++++++++++++++++++
+RESOURCE STATISTIC:
+    resource start main time: 9:07
+    resource return main time: 15:00
+    resource main time work: 5:53
+DC time work 9:00 - 18:00
+CONCLUSION: resource #2 fits in DC access window
+
+RESOURCE #3
+TRIP STATISTIC:
+TRIP #1 count orders 4 weight 40/50
+trip loading start time: 9:00
+--------------------------------
+    order name order_6
+    time loading & unloading 10, 40
+    access window 10:00 - 11:00
+    order start time 10:20
+    order finish time 11:00
+--------------------------------
+    order name order_7
+    time loading & unloading 30, 10
+    access window 12:30 - 13:00
+    order start time 12:30
+    order finish time 12:40
+--------------------------------
+    order name order_8
+    time loading & unloading 10, 10
+    access window 13:00 - 14:00
+    order start time 13:00
+    order finish time 13:10
+--------------------------------
+    order name order_9
+    time loading & unloading 20, 111
+    access window 16:00 - 17:00
+    order start time 16:00
+    order finish time 17:51
+--------------------------------
+    resource return time to DC: 18:01
+    resource trip time work: 9:01
+++++++++++++++++++++++++++++++++
+RESOURCE STATISTIC:
+    resource start main time: 9:00
+    resource return main time: 18:01
+    resource main time work: 9:01
+DC time work 9:00 - 18:00
+CONCLUSION: resource #3 not fits in DC access window
+
+
+Process finished with exit code 0
