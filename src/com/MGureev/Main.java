@@ -26,11 +26,11 @@ public class Main {
         Order order_5 =new Order("order_5",50,new AccessWindow(15,0,16,0),
                 new Coordinates(53.205815, 50.189533),40,40);
 
-        Order order_6 =new Order("order_6",10,new AccessWindow(10,0,11,0),
+        Order order_6 =new Order("order_6",10,new AccessWindow(10,0,13,0),
                 new Coordinates(53.250913, 50.222821),10,40);
 
         Order order_7 =
-                new Order("order_7",10,new AccessWindow(12,30,13,0),
+                new Order("order_7",10,new AccessWindow(12,30,15,0),
                         new Coordinates(53.215397, 50.146258),30,10);
 
         Order order_8 =new Order("order_8",10,new AccessWindow(13,0,14,0),
